@@ -1,0 +1,10 @@
+# Include a specific file - DB schema
+include flaskr/schema.sql
+
+# Include everything in the directory static
+graft flaskr/static
+# Include everything in the directory templates
+graft flaskr/templates
+
+# Exclude all compiled files Python
+global-exclude *.pyc
