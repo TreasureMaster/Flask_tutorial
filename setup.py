@@ -4,9 +4,10 @@ from setuptools import find_packages, setup
 
 setup(
     name='flaskr',                              # определяет имя пакета, отображаемое в PyPI
-    version='1.0.1.dev1',                       # определяет номер версии пакета
+    version='1.0.1.dev2',                       # определяет номер версии пакета
     packages=find_packages(where='flaskr'),     # список строк, определяющих пакеты, которыми управляет setuptools
                                                 # find_packages() возвращает список всех пакетов, найденных в указанном каталоге (по умолчанию - текущий)
+    package_dir={'': 'flaskr'},
     include_package_data=True,                  # True указывает автоматически включать любый файлы данных, описанных в файле MANIFEST.in
     zip_safe=False,                             # False указывает, что нельзя установить и запустить проект из zip-файла
     install_requires=[                          # список строк, указывающий какие другие дистрибутивы надо установить
