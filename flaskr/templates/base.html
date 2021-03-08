@@ -8,7 +8,7 @@
 </head>
 <body>
     <nav>
-        <h1>Flaskr</h1>
+        <h1><a href="{{ url_for('blog.index') }}">Flaskr</a></h1>
         <ul>
             {# Объект g и функция url_for() автоматически доступны в шаблонах #}
             {% if g.user %}
@@ -29,5 +29,10 @@
         {% endfor %}
         {% block content %}{% endblock %}
     </section>
+
+    <footer>
+        <h4>flaskr app</h4>
+        <p>Revision: {{ session['version'] or version }}</p>
+    </footer>
 </body>
 </html>

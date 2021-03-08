@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, session
 from pkg_resources import get_distribution
 
 
@@ -49,5 +49,10 @@ def create_app(test_config=None):
     # TERMS add_url_rule() связывает конечную точку 'index' с URL '/' в данном случае
     # Это делает одинаковым вызовы url_for('index') и url_for('blog.index')
     app.add_url_rule('/', endpoint='index')
+
+    @app.before_request
+    def load_version():
+        if 'version' not in session:
+            session['version'] = __version__
 
     return app

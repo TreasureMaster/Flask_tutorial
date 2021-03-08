@@ -1,3 +1,5 @@
+from os import name
+from sqlite3.dbapi2 import version
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -5,6 +7,7 @@ from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
+from flaskr import __version__
 
 # Схема страницы блога INDEX
 bp = Blueprint('blog', __name__)
@@ -19,7 +22,7 @@ def index():
         ' ORDER BY created DESC'
     ).fetchall()
 
-    return render_template('blog/index.html', posts=posts)
+    return render_template('blog/index.html', posts=posts, version=__version__)
 
 # Вывод страницы создания сообщения CREATE
 @bp.route('/create', methods=('GET', 'POST'))
@@ -95,7 +98,7 @@ def update(id):
     return render_template('blog/update.html', post=post)
 
 # Вывод страницы удаления сообщения DELETE
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/<int:id>/delete', methods=('POST', 'GET'))
 @login_required
 def delete(id):
     get_post(id)
@@ -103,3 +106,10 @@ def delete(id):
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
+
+
+# Просмотр каждого сообщения
+@bp.route('/<int:id>/view', endpoint='view')
+def view_post(id):
+    post = get_post(id, False)
+    return render_template('blog/post.html', post=post)

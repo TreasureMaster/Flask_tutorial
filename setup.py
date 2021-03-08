@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='flaskr',                              # определяет имя пакета, отображаемое в PyPI
-    version='1.0.1.dev2',                       # определяет номер версии пакета
+    version='1.0.2.dev1',                       # определяет номер версии пакета
     packages=find_packages(where='flaskr'),     # список строк, определяющих пакеты, которыми управляет setuptools
                                                 # find_packages() возвращает список всех пакетов, найденных в указанном каталоге (по умолчанию - текущий)
     package_dir={'': 'flaskr'},
@@ -12,6 +12,7 @@ setup(
     zip_safe=False,                             # False указывает, что нельзя установить и запустить проект из zip-файла
     install_requires=[                          # список строк, указывающий какие другие дистрибутивы надо установить
         'flask',
+        'python-dotenv'
     ],
     python_requires='>=3.6, <4',                # строка, соответствующая спецификатору используемой версии Python
 )
