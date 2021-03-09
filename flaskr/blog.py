@@ -106,10 +106,3 @@ def delete(id):
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
-
-
-# Просмотр каждого сообщения
-@bp.route('/<int:id>/view', endpoint='view')
-def view_post(id):
-    post = get_post(id, False)
-    return render_template('blog/post.html', post=post)

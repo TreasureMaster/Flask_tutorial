@@ -50,6 +50,10 @@ def create_app(test_config=None):
     # Это делает одинаковым вызовы url_for('index') и url_for('blog.index')
     app.add_url_rule('/', endpoint='index')
 
+    # Регистрация схемы post в приложении
+    from . import post
+    app.register_blueprint(post.bp)
+
     @app.before_request
     def load_version():
         if 'version' not in session:

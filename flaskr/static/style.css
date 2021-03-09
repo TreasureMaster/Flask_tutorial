@@ -139,3 +139,12 @@ input[type=submit] {
     align-self: start;
     min-width: 10em;
 }
+
+/* Подблок likes */
+.likes {
+    display: flex;
+    justify-content: space-between;
+}
+.likes p > a{
+    padding-right: 1rem;
+}
