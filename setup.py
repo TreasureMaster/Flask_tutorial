@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='flaskr',                              # определяет имя пакета, отображаемое в PyPI
-    version='1.0.2.dev2',                       # определяет номер версии пакета
+    version='1.0.2.dev4',                       # определяет номер версии пакета
     packages=find_packages(where='flaskr'),     # список строк, определяющих пакеты, которыми управляет setuptools
                                                 # find_packages() возвращает список всех пакетов, найденных в указанном каталоге (по умолчанию - текущий)
     package_dir={'': 'flaskr'},
