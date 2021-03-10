@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
 from werkzeug.exceptions import abort
 
@@ -14,15 +14,14 @@ bp = Blueprint('post', __name__)
 # Просмотр каждого сообщения
 @bp.route('/<int:id>/view', endpoint='view')
 def view_post(id):
-    post = get_post(id, False)
-    likes = get_count_likes(id)
-    return render_template('posts/view.html', post=post, likes=likes, author=is_author(id))
+    post = get_post(id)
+    return render_template('posts/view.html', post=post)
 
 # Лайки для сообщений
-@bp.route('/<int:id>/like', endpoint='like')
+@bp.route('/<int:id>/regard/<string:regard>', endpoint='like')
 @login_required
-def set_like(id):
-    error = ''
+def set_regard(id, regard):
+    error = None
     if is_author(id):
         error = 'The author cannot like his posts.'
     elif is_regard_set(id):
@@ -33,16 +32,12 @@ def set_like(id):
     else:
         db = get_db()
         db.execute(
-            'INSERT INTO likes (post_id, like)'
-            ' VALUES (?, ?)',
+            'INSERT INTO likes (post_id, %s)'
+            ' VALUES (?, ?)' % regard,
             (id, g.user['id'])
         )
         db.commit()
-    # TODO передать параметры или переделать ?
-    # TODO собрать likes и author в post
-    # TODO сделать декоратор-сборщик данных в post?
-        return redirect(url_for('post.view', id=id))
-    return render_template('posts/view.html')
+    return render_template('posts/view.html', post=get_post(id))
 
 @bp.route('/<int:id>/dislike', endpoint='dislike')
 @login_required
@@ -76,17 +71,10 @@ def is_author(post_id):
         ' WHERE id = ?',
         (post_id,)
     ).fetchone()[0]
-
-    return user_id == g.user['id']
+    return g.user is not None and user_id == g.user['id']
 
 # Определяет оставлял ли текущий пользователь какой-либо отзыв в данном посте
 def is_regard_set(post_id):
-    # query = (
-    #     'SELECT *'
-    #     ' FROM likes'
-    #     ' WHERE post_id = ?'
-    #     ' AND (like = ? OR dislike = ?)'
-    # ) % regard
     regard = get_db().execute(
         'SELECT *'
         ' FROM likes'
@@ -97,11 +85,10 @@ def is_regard_set(post_id):
 
     return regard is not None
 
-# Определяет оставил ли пользователь любой отзыв
-# def get_regards(post_id):
-#     return get_like(post_id, 'like') and get_like(post_id, 'dislike')
-
 # Переопределяет get_post из flaskr.blog, добавляя новые значения
 def get_post(post_id):
-    post = get_post_super(post_id, False)
-    likes = get_count_likes(post_id)
+    post = dict(get_post_super(post_id, False))
+    post.update(get_count_likes(post_id))
+    post['is_author'] = is_author(post_id)
+    # current_app.logger.info(post)
+    return post

@@ -17,11 +17,11 @@
 </article>
 <hr>
 <div class="likes">
-    <p>Likes: {{ likes['like'] }} Dislikes: {{ likes['dislike'] }}</p>
-    {% if g.user['id'] and not author %}
+    <p>Likes: {{ post['like'] }} Dislikes: {{ post['dislike'] }}</p>
+    {% if g.user['id'] and not post['is_author'] %}
     <p>
-    <a href="{{ url_for('post.like', id=post['id']) }}" class="action">Like it</a>
-    <a href="{{ url_for('post.dislike', id=post['id']) }}" class="action">Dislike it</a>
+    <a href="{{ url_for('post.like', id=post['id'], regard='like') }}" class="action">Like it</a>
+    <a href="{{ url_for('post.like', id=post['id'], regard='dislike') }}" class="action">Dislike it</a>
     </p>
     {% endif %}
 </div>

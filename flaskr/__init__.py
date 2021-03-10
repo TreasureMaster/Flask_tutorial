@@ -30,6 +30,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # инициализация logger
+    from . import setlogger
+    setlogger.init_logger(app)
+
     # создаем простую страницу
     @app.route('/hello')
     def hello():

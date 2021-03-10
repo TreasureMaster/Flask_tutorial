@@ -1,7 +1,7 @@
 from os import name
 from sqlite3.dbapi2 import version
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
 from werkzeug.exceptions import abort
 
@@ -21,7 +21,7 @@ def index():
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY created DESC'
     ).fetchall()
-
+    
     return render_template('blog/index.html', posts=posts, version=__version__)
 
 # Вывод страницы создания сообщения CREATE
