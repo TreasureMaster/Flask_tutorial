@@ -31,8 +31,8 @@ def create_app(test_config=None):
         pass
 
     # инициализация logger
-    from . import setlogger
-    setlogger.init_logger(app)
+    # from . import setlogger
+    # setlogger.init_logger(app)
 
     # создаем простую страницу
     @app.route('/hello')

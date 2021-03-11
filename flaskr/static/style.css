@@ -8,10 +8,13 @@ body {
     margin: 0 auto;
     background: white;
 }
-h1 {
+h1, h2 {
     font-family: serif;
     color: #377ba8;
     margin: 1rem 0;
+}
+h2 {
+    font-size: 1.2rem;
 }
 a {
     color: #377ba8;
@@ -58,12 +61,35 @@ header .action {
     display: flex;
     align-items: flex-end;
 }
-.content > header h1 {
+.content > header h1,
+.content > header h2 {
     flex: auto;
     margin: 1rem 0 0.25rem 0;
 }
 .content > article header h1 a {
     text-decoration: none;
+}
+/* для блока комментариев */
+.comments {
+    padding: 0;
+}
+.comments > header a {
+    font-size: 0.8rem;
+}
+.comments .comment textarea {
+    min-height: 0;
+    width: 90%;
+}
+.comments .comment form {
+    flex-direction: row;
+    /* justify-content: space-between; */
+    margin-bottom: 0;
+}
+p.textcomment {
+    flex-grow: 2;
+}
+.comment p {
+    margin: 0;
 }
 
 .flash {

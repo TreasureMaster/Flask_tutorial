@@ -1,3 +1,4 @@
+from os import error
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
@@ -15,12 +16,14 @@ bp = Blueprint('post', __name__)
 @bp.route('/<int:id>/view', endpoint='view')
 def view_post(id):
     post = get_post(id)
-    return render_template('posts/view.html', post=post)
+    comments = get_comments(id)
+    return render_template('posts/view.html', post=post, comments=comments)
 
 # Лайки для сообщений
 @bp.route('/<int:id>/regard/<string:regard>', endpoint='like')
 @login_required
 def set_regard(id, regard):
+    # comments = get_comments(id)
     error = None
     if is_author(id):
         error = 'The author cannot like his posts.'
@@ -37,12 +40,42 @@ def set_regard(id, regard):
             (id, g.user['id'])
         )
         db.commit()
-    return render_template('posts/view.html', post=get_post(id))
+    return render_template('posts/view.html', post=get_post(id), comments=get_comments(id))
 
-@bp.route('/<int:id>/dislike', endpoint='dislike')
+# Комментарии для сообщений
+@bp.route('/<int:id>/comment', endpoint='comment', methods=['POST',])
 @login_required
-def set_dislike(id):
-    pass
+def write_comment(id):
+    error = None
+    # comments = get_comments(id)
+    if request.method == 'POST':
+        comment = request.form['comment']
+
+        if not comment:
+            error = 'Comment text required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'INSERT INTO comments (post_id, user_id, comment)'
+                ' VALUES (?, ?, ?)',
+                (id, g.user['id'], comment)
+            )
+            db.commit()
+    return render_template('posts/view.html', post=get_post(id), comments=get_comments(id))
+
+# Редактирование комментария
+@bp.route('/<int:id>/<int:post>/update_comment', endpoint='update')
+@login_required
+def update_comment(id, post):
+    # id - номер комментария
+    # post - номер (идентификатор) поста
+    error = 'Comment Update Not Implemented Yet.'
+    flash(error)
+    return render_template('posts/view.html', post=get_post(post), comments=get_comments(post))
+
 
 # -------------------------- Вспомогательные функции ------------------------- #
 
@@ -92,3 +125,17 @@ def get_post(post_id):
     post['is_author'] = is_author(post_id)
     # current_app.logger.info(post)
     return post
+
+# Получает комментарии для данного поста
+def get_comments(post_id):
+    comments = get_db().execute(
+        'SELECT c.id, p.id AS "post", comment, c.created, c.user_id, username'
+        ' FROM post p JOIN comments c ON p.id = c.post_id'
+        ' JOIN user u ON c.user_id = u.id'
+        ' WHERE p.id = ?'
+        ' ORDER BY c.created DESC',
+        (post_id,)
+    ).fetchall()
+    # for comment in comments:
+    #     current_app.logger.info(dict(comment))
+    return comments or []
