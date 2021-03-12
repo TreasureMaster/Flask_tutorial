@@ -174,3 +174,16 @@ input[type=submit] {
 .likes p > a{
     padding-right: 1rem;
 }
+
+/* Объединение post с хештегами */
+/* .block-post {
+    display: flex;
+    justify-content: space-between;
+}
+.block-post .post {
+    flex-grow: 2;
+}
+.hashtag > p {
+    padding: 0;
+    margin: 0;
+} */
