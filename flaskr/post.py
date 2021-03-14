@@ -1,6 +1,6 @@
 from os import error
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, current_app
+    Blueprint, flash, g, redirect, render_template, request, url_for, current_app, session
 )
 from werkzeug.exceptions import abort
 
@@ -17,13 +17,35 @@ bp = Blueprint('post', __name__)
 def view_post(id):
     post = get_post(id)
     comments = get_comments(id)
-    return render_template('posts/view.html', post=post, comments=comments)
+    return render_template(
+        'posts/view.html',
+        post=post,
+        comments=comments,
+        # likes_widget=g.likes(id)
+    )
+
+# Тестовый декоратор, который требует автора
+import functools
+def author_required(view):
+    @functools.wraps(view)
+    def wrapped_view(id, *args, **kwargs):
+        if not g.likes.is_author(id):
+            # return redirect(url_for('auth.login'))
+            # TODO либо добавить в error, но как возвращать?
+            # либо проверять внутри декорируемой функции стек flash (как?)
+            # flash('The author cannot like his posts.')
+            pass
+
+        return view(id, *args, **kwargs)
+
+    return wrapped_view
 
 # Лайки для сообщений
 @bp.route('/<int:id>/regard/<string:regard>', endpoint='like')
 @login_required
+@author_required
 def set_regard(id, regard):
-    # comments = get_comments(id)
+    current_app.logger.info(session.get('_flashes'))
     error = None
     if is_author(id):
         error = 'The author cannot like his posts.'
@@ -40,7 +62,12 @@ def set_regard(id, regard):
             (id, g.user['id'])
         )
         db.commit()
-    return render_template('posts/view.html', post=get_post(id), comments=get_comments(id))
+    return render_template(
+        'posts/view.html',
+        post=get_post(id),
+        # likes_widget=g.likes(id),
+        comments=get_comments(id)
+    )
 
 # Комментарии для сообщений
 @bp.route('/<int:id>/comment', endpoint='comment', methods=['POST',])
@@ -80,21 +107,21 @@ def update_comment(id, post):
 # -------------------------- Вспомогательные функции ------------------------- #
 
 # Получает количество лайков и дизлайков для данного поста
-def get_count_likes(id, check_author=True):
-    likes = get_db().execute(
-        'SELECT count(like) AS "like", count(dislike) AS "dislike"'
-        ' FROM likes'
-        ' WHERE post_id = ?',
-        (id,)
-    ).fetchone()
+# def get_count_likes(id, check_author=True):
+#     likes = get_db().execute(
+#         'SELECT count(like) AS "like", count(dislike) AS "dislike"'
+#         ' FROM likes'
+#         ' WHERE post_id = ?',
+#         (id,)
+#     ).fetchone()
 
-    if likes is None:
-        abort(404, "Post id {0} doesn't exist.".format(id))
+#     if likes is None:
+#         abort(404, "Post id {0} doesn't exist.".format(id))
 
-    # if check_author and post['author_id'] != g.user['id']:
-    #     abort(403)
+#     # if check_author and post['author_id'] != g.user['id']:
+#     #     abort(403)
 
-    return likes
+#     return likes
 
 # Проверяет является ли текущий юзер автором данного поста
 def is_author(post_id):
@@ -106,7 +133,7 @@ def is_author(post_id):
     ).fetchone()[0]
     return g.user is not None and user_id == g.user['id']
 
-# Определяет оставлял ли текущий пользователь какой-либо отзыв в данном посте
+# Определяет оставлял ли текущий пользователь какой-либо лайк в данном посте
 def is_regard_set(post_id):
     regard = get_db().execute(
         'SELECT *'
@@ -120,9 +147,10 @@ def is_regard_set(post_id):
 
 # Переопределяет get_post из flaskr.blog, добавляя новые значения
 def get_post(post_id):
-    post = dict(get_post_super(post_id, False))
-    post.update(get_count_likes(post_id))
-    post['is_author'] = is_author(post_id)
+    # post = dict(get_post_super(post_id, False))
+    post = get_post_super(post_id, False)
+    # post.update(get_count_likes(post_id))
+    # post['is_author'] = is_author(post_id)
     # current_app.logger.info(post)
     return post
 

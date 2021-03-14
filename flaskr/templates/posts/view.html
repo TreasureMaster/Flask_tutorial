@@ -16,7 +16,9 @@
         <p class="body">{{ post['body'] }}</p>
     </article>
 <hr>
-{% include 'posts/likes.html' %}
+{#{% include 'posts/likes.html' %}#}
+{# likes_widget #}
+{{ g.likes(post['id']) }}
 <hr>
     <div class="content comments">
         <header>

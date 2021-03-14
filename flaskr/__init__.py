@@ -1,6 +1,8 @@
 import os
-from flask import Flask, session
+from flask import Flask, session, g
 from pkg_resources import get_distribution
+
+from .widgets.likeswidget import Likes
 
 
 __version__ = get_distribution('flaskr').version
@@ -31,8 +33,10 @@ def create_app(test_config=None):
         pass
 
     # инициализация logger
-    # from . import setlogger
-    # setlogger.init_logger(app)
+    from . import setlogger
+    setlogger.init_logger(app)
+
+    # app.logger.info(session)
 
     # создаем простую страницу
     @app.route('/hello')
@@ -58,9 +62,16 @@ def create_app(test_config=None):
     from . import post
     app.register_blueprint(post.bp)
 
+    # Загрузка версии приложения
     @app.before_request
     def load_version():
         if 'version' not in session:
             session['version'] = __version__
+
+    # Загрузка виджетов
+    @app.before_request
+    def load_widgets():
+        g.likes = Likes(app)
+        app.logger.info(session)
 
     return app
