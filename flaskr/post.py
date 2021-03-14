@@ -3,6 +3,7 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, current_app, session
 )
 from werkzeug.exceptions import abort
+from markupsafe import Markup
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
@@ -33,8 +34,9 @@ def author_required(view):
             # return redirect(url_for('auth.login'))
             # TODO либо добавить в error, но как возвращать?
             # либо проверять внутри декорируемой функции стек flash (как?)
-            # flash('The author cannot like his posts.')
-            pass
+            flash('The author cannot like his posts.', 'error')
+            flash(Markup('Test <b>Markup</b> flashing.'), 'title')
+            # pass
 
         return view(id, *args, **kwargs)
 
