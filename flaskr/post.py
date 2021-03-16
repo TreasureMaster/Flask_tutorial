@@ -18,11 +18,9 @@ bp = Blueprint('post', __name__)
 @bp.route('/<int:id>/view', endpoint='view')
 def view_post(id):
     post = get_post(id)
-    comments = get_comments(id)
     return render_template(
         'posts/view.html',
         post=post,
-        comments=comments
     )
 
 # Лайки для сообщений
@@ -45,7 +43,6 @@ def set_regard(id, regard):
     return render_template(
         'posts/view.html',
         post=get_post(id),
-        comments=get_comments(id)
     )
 
 # Комментарии для сообщений
@@ -69,7 +66,7 @@ def write_comment(id):
                 (id, g.user['id'], comment)
             )
             db.commit()
-    return render_template('posts/view.html', post=get_post(id), comments=get_comments(id))
+    return render_template('posts/view.html', post=get_post(id))
 
 # Редактирование комментария
 @bp.route('/<int:id>/<int:post>/update_comment', endpoint='update')
@@ -79,7 +76,7 @@ def update_comment(id, post):
     # post - номер (идентификатор) поста
     error = 'Comment Update Not Implemented Yet.'
     flash(error)
-    return render_template('posts/view.html', post=get_post(post), comments=get_comments(post))
+    return render_template('posts/view.html', post=get_post(post))
 
 
 # -------------------------- Вспомогательные функции ------------------------- #
@@ -92,17 +89,3 @@ def get_post(post_id):
     # post['is_author'] = is_author(post_id)
     # current_app.logger.info(post)
     return post
-
-# Получает комментарии для данного поста
-def get_comments(post_id):
-    comments = get_db().execute(
-        'SELECT c.id, p.id AS "post", comment, c.created, c.user_id, username'
-        ' FROM post p JOIN comments c ON p.id = c.post_id'
-        ' JOIN user u ON c.user_id = u.id'
-        ' WHERE p.id = ?'
-        ' ORDER BY c.created DESC',
-        (post_id,)
-    ).fetchall()
-    # for comment in comments:
-    #     current_app.logger.info(dict(comment))
-    return comments or []

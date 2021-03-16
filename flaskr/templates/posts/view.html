@@ -20,38 +20,5 @@
 {# likes_widget #}
 {{ g.likes(post['id']) }}
 <hr>
-    <div class="content comments">
-        <header>
-            <h2>Comments:</h2>
-            {#{% if g.user %}
-            <a href="{{ url_for('blog.create') }}" class="action">New Comment</a>
-            {% endif %}#}
-        </header>
-        {% if g.user %}
-        <div class="comment">
-            <form method="post" action="{{ url_for('post.comment', id=post['id']) }}">
-                <p class="textcomment"><textarea name="comment" id="comment">{{ request.form['comment'] }}</textarea></p>
-                <p><input type="submit" value="Add Comment"></p>
-            </form>
-        <hr>
-        </div>
-        {% endif %}
-        {% for comment in comments %}
-            <article class="post">
-                <header>
-                    <div>
-                        {#<h1><a href="{{ url_for('post.view', id=post['id']) }}">{{ post['title'] }}</a></h1>#}
-                        <div class="about">by {{ comment['username'] }} on {{ comment['created'].strftime('%Y-%m-%d') }}</div>
-                    </div>
-                    {% if g.user['id'] == comment['user_id'] %}
-                    <a href="{{ url_for('post.update', id=comment['id'], post=comment['post']) }}" class="action">Edit</a>
-                    {% endif %}
-                </header>
-                <p class="body">{{ comment['comment'] }}</p>
-            </article>
-            {% if not loop.last %}
-                <hr>
-            {% endif %}
-        {% endfor %}
-    </div>
+{{ g.comments(post['id']) }}
 {% endblock %}

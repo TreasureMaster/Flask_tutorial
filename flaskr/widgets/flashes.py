@@ -18,7 +18,7 @@ class Flash(Widget):
 
     # Вывод подготовленного HTML кода
     def __html__(self):
-        current_app.logger.info(session.get('_flashes'))#.pop(self._id))
+        # current_app.logger.info(session.get('_flashes'))#.pop(self._id))
         content = current_app.jinja_env.get_template('posts/flash.html')
         output = content.render(
             message  = self.message,

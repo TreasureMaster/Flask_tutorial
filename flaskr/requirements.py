@@ -28,7 +28,7 @@ def author_required(view, for_widget=None):
     @functools.wraps(view)
     def wrapped_view(id, *args, **kwargs):
         if for_widget and for_widget in g:
-            current_app.logger.info(for_widget)
+            # current_app.logger.info(for_widget)
             if not g.get(for_widget).is_author(id):
                 pflash(Flash('Author required for this action.'), 'error')
         else:
@@ -42,10 +42,10 @@ def author_denied(view, for_widget=None):
     @functools.wraps(view)
     def wrapped_view(id, *args, **kwargs):
         if for_widget and for_widget in g:
-            current_app.logger.info(for_widget)
-            current_app.logger.info(id)
-            current_app.logger.info(g.get(for_widget))
-            current_app.logger.info(g.get(for_widget).is_author(id))
+            # current_app.logger.info(for_widget)
+            # current_app.logger.info(id)
+            # current_app.logger.info(g.get(for_widget))
+            # current_app.logger.info(g.get(for_widget).is_author(id))
             if g.get(for_widget).is_author(id):
                 pflash(Flash('Author denied for this action.'), 'error')
         else:

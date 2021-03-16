@@ -3,6 +3,7 @@ from flask import Flask, session, g
 from pkg_resources import get_distribution
 
 from .widgets.likeswidget import Likes
+from .widgets.commentswidget import Comments
 
 
 __version__ = get_distribution('flaskr').version
@@ -72,6 +73,7 @@ def create_app(test_config=None):
     @app.before_request
     def load_widgets():
         g.likes = Likes(app)
+        g.comments = Comments(app)
         app.logger.info(session)
 
     return app
